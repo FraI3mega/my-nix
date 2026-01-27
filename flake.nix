@@ -7,6 +7,10 @@
     pkgs-by-name-for-flake-parts.url = "github:drupol/pkgs-by-name-for-flake-parts";
     make-shell.url = "github:nicknovitski/make-shell";
     treefmt-nix.url = "github:numtide/treefmt-nix";
+    orca-slicer-src = {
+      url = "github:/OrcaSlicer/OrcaSlicer";
+      flake = false;
+    };
   };
 
   outputs = inputs: inputs.flake-parts.lib.mkFlake { inherit inputs; } (inputs.import-tree ./modules);

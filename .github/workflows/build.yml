@@ -19,12 +19,31 @@ jobs:
           # If you chose API tokens for write access OR if you have a private cache
           authToken: "${{ secrets.CACHIX_AUTH_TOKEN }}"
       - run: nix flake check
-      - id: set-matrix
-        name: Generate Nix Matrix
-        run: |
-          set -Eeu
-          matrix="$(nix eval --json '.#githubActions.matrix')"
-          echo "matrix=$matrix" >> "$GITHUB_OUTPUT"
+      - run: |
+          MATRIX=$(nix flake show --json | jq -c '
+            .packages
+            | to_entries
+            | map(
+                .key as $system
+                | .value
+                | keys[]
+                | {
+                    name: .,
+                    system: $system,
+                    os: (
+                      if $system == "x86_64-linux" then "ubuntu-latest"
+                      elif $system == "aarch64-linux" then "ubuntu-latest"
+                      elif $system == "x86_64-darwin" then "macos-latest"
+                      elif $system == "aarch64-darwin" then "macos-latest"
+                      else empty
+                      end
+                    ),
+                    attr: "packages.\($system).\(. )"
+                  }
+              )
+          ')
+
+          echo "matrix={\"include\":$MATRIX}" >> "$GITHUB_OUTPUT"
 
   nix-build:
     name: ${{ matrix.name }} (${{ matrix.system }})

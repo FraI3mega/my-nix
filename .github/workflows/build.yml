@@ -12,7 +12,7 @@ jobs:
       fail-fast: false
       matrix:
         package:
-          - orca-slicer-nigthly
+          - orca-slicer-nightly
 
     uses: ./.github/workflows/nix.yml
     with:

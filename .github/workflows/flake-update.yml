@@ -26,8 +26,3 @@ jobs:
       - uses: stefanzweifel/git-auto-commit-action@v4
         with:
           commit_message: "Update flake"
-
-  build:
-    needs: update
-    uses: ./.github/workflows/build.yml
-    secrets: inherit

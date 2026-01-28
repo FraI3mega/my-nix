@@ -1,20 +1,37 @@
-name: Build
+name: Build packages
 
 on:
-  workflow_call:
-    secrets:
-      CACHIX_AUTH_TOKEN:
-        required: false
+  pull_request:
+  push:
 
 jobs:
-  build:
-    strategy:
-      fail-fast: false
-      matrix:
-        package:
-          - orca-slicer-nightly
+  nix-matrix:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@v6
+      - uses: DeterminateSystems/determinate-nix-action@v3
+      - uses: cachix/cachix-action@v16
+        with:
+          name: frai3nix
+          # If you chose API tokens for write access OR if you have a private cache
+          authToken: "${{ secrets.CACHIX_AUTH_TOKEN }}"
+      - run: nix flake check
+      - id: set-matrix
+        name: Generate Nix Matrix
+        run: |
+          set -Eeu
+          matrix="$(nix eval --json '.#githubActions.matrix')"
+          echo "matrix=$matrix" >> "$GITHUB_OUTPUT"
 
-    uses: ./.github/workflows/nix.yml
-    with:
-      command: nix build -L .#${{ matrix.package }}
-    secrets: inherit
+  nix-build:
+    name: ${{ matrix.name }} (${{ matrix.system }})
+    needs: nix-matrix
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix: ${{fromJSON(needs.nix-matrix.outputs.matrix)}}
+    steps:
+      - uses: actions/checkout@v6
+      - uses: DeterminateSystems/determinate-nix-action@v3
+      - run: nix build -L '.#${{ matrix.attr }}'

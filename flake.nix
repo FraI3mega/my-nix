@@ -6,10 +6,12 @@
     import-tree.url = "github:vic/import-tree";
     pkgs-by-name-for-flake-parts.url = "github:drupol/pkgs-by-name-for-flake-parts";
     make-shell.url = "github:nicknovitski/make-shell";
+    treefmt-nix.url = "github:numtide/treefmt-nix";
     orca-slicer-src = {
       url = "github:/OrcaSlicer/OrcaSlicer";
       flake = false;
     };
+    awww.url = "git+https://codeberg.org/LGFae/awww";
   };
 
   outputs =
@@ -45,6 +47,14 @@
             #   foo = config.packages.foo;
             # };
             # pkgsDirectory = ../pkgs/by-name;
+
+            packages.awww = inputs.awww.packages.${pkgs.stdenv.hostPlatform.system}.awww.overrideAttrs (old: {
+              buildFeatures = [
+                "all-formats"
+              ];
+              buildInputs = old.buildInputs ++ [ pkgs.dav1d ];
+
+            });
 
             packages.orca-slicer-nightly = pkgs.orca-slicer.overrideAttrs (old: {
               src = inputs.orca-slicer-src;

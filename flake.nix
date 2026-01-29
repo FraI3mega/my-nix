@@ -49,9 +49,11 @@
             # pkgsDirectory = ../pkgs/by-name;
 
             packages.awww = inputs.awww.packages.${pkgs.stdenv.hostPlatform.system}.awww.overrideAttrs (old: {
-              buildFeatures = [
-                "all-formats"
+              cargoBuildFlags = [
+                "--features=all-formats"
               ];
+
+              pname = "awwww";
               buildInputs = old.buildInputs ++ [ pkgs.dav1d ];
 
             });

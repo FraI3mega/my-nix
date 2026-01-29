@@ -53,7 +53,7 @@
                 "--features=all-formats"
               ];
 
-              pname = "awwww";
+              pname = "awww-all-formats";
               buildInputs = old.buildInputs ++ [ pkgs.dav1d ];
 
             });

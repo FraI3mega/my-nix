@@ -33,8 +33,8 @@ jobs:
                     system: $system,
                     os: (
                       if $system == "x86_64-linux" then "ubuntu-latest"
-                      elif $system == "aarch64-linux" then "ubuntu-latest"
-                      elif $system == "x86_64-darwin" then "macos-latest"
+                      elif $system == "aarch64-linux" then "ubuntu-latest-24.04-arm"
+                      elif $system == "x86_64-darwin" then "macos-15-intel"
                       elif $system == "aarch64-darwin" then "macos-latest"
                       else empty
                       end

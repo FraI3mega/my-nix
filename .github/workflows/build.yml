@@ -3,6 +3,8 @@ name: Build packages
 on:
   pull_request:
   push:
+  workflow_run:
+    workflows: ["flake-update"]
 
 jobs:
   nix-matrix:

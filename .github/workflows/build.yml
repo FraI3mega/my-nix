@@ -5,6 +5,7 @@ on:
   push:
   workflow_run:
     workflows: ["flake-update"]
+    types: [completed]
 
 jobs:
   nix-matrix:

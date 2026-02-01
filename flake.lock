@@ -169,11 +169,11 @@
     "orca-slicer-src": {
       "flake": false,
       "locked": {
-        "lastModified": 1769551938,
-        "narHash": "sha256-7rtlHMeaJ4aDHWMBRiX505m364q1u5qRFbw5YfLVINU=",
+        "lastModified": 1769875809,
+        "narHash": "sha256-GDHQc0DUq5vtvnDew6gFYrgO7VDR5vFYucL/S6BvgaE=",
         "owner": "OrcaSlicer",
         "repo": "OrcaSlicer",
-        "rev": "f27605eac166d36b79f4db8890cd38f19adc1fc2",
+        "rev": "3a056f2aa33f96abe49929aef7968a1581b3abbd",
         "type": "github"
       },
       "original": {

@@ -61,7 +61,10 @@
             packages.orca-slicer-nightly = pkgs.orca-slicer.overrideAttrs (old: {
               src = inputs.orca-slicer-src;
               # add libnoise as you already do and append a tiny patch to link imgcodecs
-              buildInputs = old.buildInputs ++ [ pkgs.libnoise ];
+              buildInputs = old.buildInputs ++ [
+                pkgs.libnoise
+                pkgs.draco
+              ];
               patches = (old.patches or [ ]) ++ [
                 # Add a small patch that links opencv_imgcodecs (provides cv::imread)
                 (pkgs.writeText "fix-opencv-imgcodecs.patch" ''

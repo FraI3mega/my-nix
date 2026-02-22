@@ -89,6 +89,8 @@
                 "-DLIBNOISE_USE_BUNDLED=OFF"
                 "-DLIBNOISE_LIBRARY_RELEASE=${pkgs.libnoise}/bin/libnoise.so"
                 "-DLIBNOISE_INCLUDE_DIR=${pkgs.libnoise}/include"
+                "-DGLEW_USE_EGL=OFF"
+                "-DwxUSE_GLCANVAS_EGL=OFF"
               ];
 
               # If the derivation uses `version` in meta or in the build, override it here:

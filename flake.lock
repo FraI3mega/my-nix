@@ -72,11 +72,11 @@
     },
     "import-tree": {
       "locked": {
-        "lastModified": 1771045967,
-        "narHash": "sha256-oYO4poyw0Sb/db2PigqugMlDwsvwLg6CSpFrMUWxA3Q=",
+        "lastModified": 1772159371,
+        "narHash": "sha256-AkfVgWWxt1pa1SlfKzcL1oQpMzgP70U3fBtzXqEGOms=",
         "owner": "vic",
         "repo": "import-tree",
-        "rev": "c968d3b54d12cf5d9c13f16f7c545a06c9d1fde6",
+        "rev": "78c35e32f2b499c25e0671e41662537a6b1edbf0",
         "type": "github"
       },
       "original": {
@@ -136,11 +136,11 @@
     },
     "nixpkgs_2": {
       "locked": {
-        "lastModified": 1771369470,
-        "narHash": "sha256-0NBlEBKkN3lufyvFegY4TYv5mCNHbi5OmBDrzihbBMQ=",
+        "lastModified": 1771848320,
+        "narHash": "sha256-0MAd+0mun3K/Ns8JATeHT1sX28faLII5hVLq0L3BdZU=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "0182a361324364ae3f436a63005877674cf45efb",
+        "rev": "2fc6539b481e1d2569f25f8799236694180c0993",
         "type": "github"
       },
       "original": {
@@ -169,11 +169,11 @@
     "orca-slicer-src": {
       "flake": false,
       "locked": {
-        "lastModified": 1771679408,
-        "narHash": "sha256-CiKmBK7nb85kR4ijpAmhY0jHAX5pBJ5w2mKWkvsMQQQ=",
+        "lastModified": 1772212445,
+        "narHash": "sha256-PWN9t5RG+A11I3VNAOGYberlyhB7hpO0fVhdebGKJW4=",
         "owner": "OrcaSlicer",
         "repo": "OrcaSlicer",
-        "rev": "7e1b2d99d324db63919fb7ad874a16c5ef86ccd0",
+        "rev": "a2528fee10586a42f81de66772732e23a7d5826e",
         "type": "github"
       },
       "original": {

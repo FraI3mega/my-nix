@@ -28,6 +28,7 @@
         imports = [
           # Optional: use external flake logic, e.g.
           # inputs.foo.flakeModules.default
+          inputs.pkgs-by-name-for-flake-parts.flakeModule
         ];
         flake = {
           # Put your original flake attributes here.
@@ -46,7 +47,7 @@
             # packages.bar = pkgs.callPackage ./bar/package.nix {
             #   foo = config.packages.foo;
             # };
-            # pkgsDirectory = ../pkgs/by-name;
+            pkgsDirectory = ./pkgs/by-name;
 
             packages.awww = inputs.awww.packages.${pkgs.stdenv.hostPlatform.system}.awww.overrideAttrs (old: {
               cargoBuildFlags = [
@@ -58,44 +59,44 @@
 
             });
 
-            packages.orca-slicer-nightly = pkgs.orca-slicer.overrideAttrs (old: {
-              src = inputs.orca-slicer-src;
-              # add libnoise as you already do and append a tiny patch to link imgcodecs
-              buildInputs = old.buildInputs ++ [
-                pkgs.libnoise
-                pkgs.draco
-              ];
-              patches = (old.patches or [ ]) ++ [
-                # Add a small patch that links opencv_imgcodecs (provides cv::imread)
-                (pkgs.writeText "fix-opencv-imgcodecs.patch" ''
-                  --- a/src/libslic3r/CMakeLists.txt
-                  +++ b/src/libslic3r/CMakeLists.txt
-                  @@ -557,8 +557,9 @@ target_link_libraries(libslic3r
-                           libigl
-                           libnest2d
-                           miniz
-                  -        opencv_core
-                  -        opencv_imgproc
-                  +        opencv_core
-                  +        opencv_imgproc
-                  +        opencv_imgcodecs
-                       PRIVATE
-                           ''${CMAKE_DL_LIBS}
-                           ''${EXPAT_LIBRARIES}
-                '')
-              ];
-              cmakeFlags = (old.cmakeFlags or [ ]) ++ [
-                "-DUSE_SYSTEM_LIBNOISE=ON"
-                "-DLIBNOISE_USE_BUNDLED=OFF"
-                "-DLIBNOISE_LIBRARY_RELEASE=${pkgs.libnoise}/bin/libnoise.so"
-                "-DLIBNOISE_INCLUDE_DIR=${pkgs.libnoise}/include"
-                "-DGLEW_USE_EGL=OFF"
-                "-DwxUSE_GLCANVAS_EGL=OFF"
-              ];
-
-              # If the derivation uses `version` in meta or in the build, override it here:
-              version = "nightly";
-            });
+            # packages.orca-slicer-nightly = pkgs.orca-slicer.overrideAttrs (old: {
+            #   src = inputs.orca-slicer-src;
+            #   # add libnoise as you already do and append a tiny patch to link imgcodecs
+            #   buildInputs = old.buildInputs ++ [
+            #     pkgs.libnoise
+            #     pkgs.draco
+            #   ];
+            #   patches = (old.patches or [ ]) ++ [
+            #     # Add a small patch that links opencv_imgcodecs (provides cv::imread)
+            #     (pkgs.writeText "fix-opencv-imgcodecs.patch" ''
+            #       --- a/src/libslic3r/CMakeLists.txt
+            #       +++ b/src/libslic3r/CMakeLists.txt
+            #       @@ -557,8 +557,9 @@ target_link_libraries(libslic3r
+            #                libigl
+            #                libnest2d
+            #                miniz
+            #       -        opencv_core
+            #       -        opencv_imgproc
+            #       +        opencv_core
+            #       +        opencv_imgproc
+            #       +        opencv_imgcodecs
+            #            PRIVATE
+            #                ''${CMAKE_DL_LIBS}
+            #                ''${EXPAT_LIBRARIES}
+            #     '')
+            #   ];
+            #   cmakeFlags = (old.cmakeFlags or [ ]) ++ [
+            #     "-DUSE_SYSTEM_LIBNOISE=ON"
+            #     "-DLIBNOISE_USE_BUNDLED=OFF"
+            #     "-DLIBNOISE_LIBRARY_RELEASE=${pkgs.libnoise}/bin/libnoise.so"
+            #     "-DLIBNOISE_INCLUDE_DIR=${pkgs.libnoise}/include"
+            #     "-DGLEW_USE_EGL=OFF"
+            #     "-DwxUSE_GLCANVAS_EGL=OFF"
+            #   ];
+            #
+            #   # If the derivation uses `version` in meta or in the build, override it here:
+            #   version = "nightly";
+            # });
           };
       }
     );

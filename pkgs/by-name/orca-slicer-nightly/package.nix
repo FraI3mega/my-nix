@@ -57,7 +57,7 @@ let
       });
 in
 stdenv.mkDerivation (finalAttrs: {
-  pname = "orca-slicer";
+  pname = "orca-slicer-nightly";
   version = "7bab2c2785cced6d9f9f0548ace9a9ade30336ca";
 
   src = fetchFromGitHub {

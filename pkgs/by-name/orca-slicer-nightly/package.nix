@@ -1,5 +1,4 @@
 {
-  inputs,
   stdenv,
   lib,
   binutils,
@@ -39,9 +38,8 @@
   onetbb,
   webkitgtk_4_1,
   wxGTK31,
-  libx11,
+  xorg,
   libnoise,
-  draco,
   withSystemd ? stdenv.hostPlatform.isLinux,
 }:
 let
@@ -50,36 +48,34 @@ let
       withCurl = true;
       withPrivateFonts = true;
       withWebKit = true;
-      withEGL = false;
     }).overrideAttrs
       (old: {
-        buildInputs = old.buildInputs ++ [ libsecret ];
         configureFlags = old.configureFlags ++ [
           # Disable noisy debug dialogs
           "--enable-debug=no"
         ];
       });
-  glew' = glew.override {
-    enableEGL = false;
-  };
 in
 stdenv.mkDerivation (finalAttrs: {
-  pname = "orca-slicer-nightly";
-  version = "nightly";
+  pname = "orca-slicer";
+  version = "7bab2c2785cced6d9f9f0548ace9a9ade30336ca";
 
-  src = inputs.orca-slicer-src;
+  src = fetchFromGitHub {
+    owner = "OrcaSlicer";
+    repo = "OrcaSlicer";
+    rev = finalAttrs.version;
+    hash = "sha256-YtgQg87Ed9rk0WZqXPwitsxPWgutygi/0NfXvDMlvSg=";
+  };
 
   nativeBuildInputs = [
     cmake
     pkg-config
     wrapGAppsHook3
     wxGTK'
-    glew'
   ];
 
   buildInputs = [
     binutils
-    glew'
     (boost187.override {
       enableShared = true;
       enableStatic = false;
@@ -98,6 +94,7 @@ stdenv.mkDerivation (finalAttrs: {
     expat
     ffmpeg
     gcc-unwrapped
+    glew
     glfw
     glib
     glib-networking
@@ -119,10 +116,9 @@ stdenv.mkDerivation (finalAttrs: {
     onetbb
     webkitgtk_4_1
     wxGTK'
-    libx11
+    xorg.libX11
     opencv.cxxdev
     libnoise
-    draco
   ]
   ++ lib.optionals withSystemd [ systemd ]
   ++ finalAttrs.checkInputs;
@@ -146,46 +142,43 @@ stdenv.mkDerivation (finalAttrs: {
   doCheck = true;
   checkInputs = [ gtest ];
 
-  separeateDebugInfo = true;
+  separateDebugInfo = true;
 
-  env = {
-    NLOPT = nlopt;
+  NLOPT = nlopt;
 
-    NIX_CFLAGS_COMPILE = toString (
-      [
-        "-Wno-ignored-attributes"
-        "-I${opencv.out}/include/opencv4"
-        "-Wno-error=incompatible-pointer-types"
-        "-Wno-template-id-cdtor"
-        "-Wno-uninitialized"
-        "-Wno-unused-result"
-        "-Wno-deprecated-declarations"
-        "-Wno-use-after-free"
-        "-Wno-format-overflow"
-        "-Wno-stringop-overflow"
-        "-DBOOST_ALLOW_DEPRECATED_HEADERS"
-        "-DBOOST_MATH_DISABLE_STD_FPCLASSIFY"
-        "-DBOOST_MATH_NO_LONG_DOUBLE_MATH_FUNCTIONS"
-        "-DBOOST_MATH_DISABLE_FLOAT128"
-        "-DBOOST_MATH_NO_QUAD_SUPPORT"
-        "-DBOOST_MATH_MAX_FLOAT128_DIGITS=0"
-        "-DBOOST_CSTDFLOAT_NO_LIBQUADMATH_SUPPORT"
-        "-DBOOST_MATH_DISABLE_FLOAT128_BUILTIN_FPCLASSIFY"
-        "-DwxUSE_GLCANVAS_EGL=OFF"
-      ]
-      # Making it compatible with GCC 14+, see https://github.com/SoftFever/OrcaSlicer/pull/7710
-      ++ lib.optionals (stdenv.cc.isGNU && lib.versionAtLeast stdenv.cc.version "14") [
-        "-Wno-error=template-id-cdtor"
-      ]
-    );
+  NIX_CFLAGS_COMPILE = toString (
+    [
+      "-Wno-ignored-attributes"
+      "-I${opencv.out}/include/opencv4"
+      "-Wno-error=incompatible-pointer-types"
+      "-Wno-template-id-cdtor"
+      "-Wno-uninitialized"
+      "-Wno-unused-result"
+      "-Wno-deprecated-declarations"
+      "-Wno-use-after-free"
+      "-Wno-format-overflow"
+      "-Wno-stringop-overflow"
+      "-DBOOST_ALLOW_DEPRECATED_HEADERS"
+      "-DBOOST_MATH_DISABLE_STD_FPCLASSIFY"
+      "-DBOOST_MATH_NO_LONG_DOUBLE_MATH_FUNCTIONS"
+      "-DBOOST_MATH_DISABLE_FLOAT128"
+      "-DBOOST_MATH_NO_QUAD_SUPPORT"
+      "-DBOOST_MATH_MAX_FLOAT128_DIGITS=0"
+      "-DBOOST_CSTDFLOAT_NO_LIBQUADMATH_SUPPORT"
+      "-DBOOST_MATH_DISABLE_FLOAT128_BUILTIN_FPCLASSIFY"
+    ]
+    # Making it compatible with GCC 14+, see https://github.com/SoftFever/OrcaSlicer/pull/7710
+    ++ lib.optionals (stdenv.cc.isGNU && lib.versionAtLeast stdenv.cc.version "14") [
+      "-Wno-error=template-id-cdtor"
+    ]
+  );
 
-    NIX_LDFLAGS = toString [
-      (lib.optionalString withSystemd "-ludev")
-      "-L${boost187}/lib"
-      "-lboost_log"
-      "-lboost_log_setup"
-    ];
-  };
+  NIX_LDFLAGS = toString [
+    (lib.optionalString withSystemd "-ludev")
+    "-L${boost187}/lib"
+    "-lboost_log"
+    "-lboost_log_setup"
+  ];
 
   prePatch = ''
     sed -i 's|nlopt_cxx|nlopt|g' cmake/modules/FindNLopt.cmake
@@ -206,6 +199,10 @@ stdenv.mkDerivation (finalAttrs: {
     (lib.cmakeFeature "LIBNOISE_INCLUDE_DIR" "${libnoise}/include/noise")
     (lib.cmakeFeature "LIBNOISE_LIBRARY_RELEASE" "${libnoise}/lib/libnoise-static.a")
     "-Wno-dev"
+
+    # cmake 4 compatibility, remove in next update
+    # see: https://github.com/SoftFever/OrcaSlicer/commit/883607e1d4a0b2bb719f2f4bcd9fd72f8c2174fa
+    (lib.cmakeFeature "CMAKE_POLICY_VERSION_MINIMUM" "3.13")
   ];
 
   # Generate translation files
@@ -218,6 +215,7 @@ stdenv.mkDerivation (finalAttrs: {
           glew
         ]
       }"
+      --set WEBKIT_DISABLE_COMPOSITING_MODE 1
     )
   '';
 

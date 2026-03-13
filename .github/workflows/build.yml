@@ -5,7 +5,6 @@ on:
   push:
   workflow_run:
     workflows: ["flake-update"]
-    types: [completed]
 
 jobs:
   nix-matrix:
@@ -25,29 +24,27 @@ jobs:
       - run: nix flake check
       - id: mat
         run: |
-          MATRIX=$(nix flake show --json | jq -c '
-            .packages
-            | to_entries
-            | map(
-                .key as $system
-                | .value
-                | keys[]
-                | {
-                    name: .,
-                    system: $system,
-                    os: (
-                      if $system == "x86_64-linux" then "ubuntu-latest"
-                      elif $system == "aarch64-linux" then "ubuntu-latest-24.04-arm"
-                      elif $system == "x86_64-darwin" then "macos-15-intel"
-                      elif $system == "aarch64-darwin" then "macos-latest"
-                      else empty
-                      end
-                    ),
-                    attr: "packages.\($system).\(. )"
-                  }
-              )
+          MATRIX=$(nix eval --json .#packages | jq -c '
+          to_entries
+          | map(
+              .key as $system
+              | .value
+              | keys[]
+              | {
+                  name: .,
+                  system: $system,
+                  os: (
+                    if $system == "x86_64-linux" then "ubuntu-latest"
+                    elif $system == "aarch64-linux" then "ubuntu-latest-24.04-arm"
+                    elif $system == "x86_64-darwin" then "macos-15-intel"
+                    elif $system == "aarch64-darwin" then "macos-latest"
+                    else empty
+                  end
+                ),
+                attr: "packages.\($system).\(. )"
+              }
+          )
           ')
-
           echo "matrix={\"include\":$MATRIX}"
           echo "matrix={\"include\":$MATRIX}" >> "$GITHUB_OUTPUT"
 

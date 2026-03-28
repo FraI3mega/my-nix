@@ -59,6 +59,8 @@
 
             });
 
+            packages.calibre = inputs.awww.packages.${pkgs.stdenv.hostPlatform.system}.calibre;
+
             # packages.orca-slicer-nightly = pkgs.orca-slicer.overrideAttrs (old: {
             #   src = inputs.orca-slicer-src;
             #   # add libnoise as you already do and append a tiny patch to link imgcodecs

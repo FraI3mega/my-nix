@@ -15,7 +15,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: DeterminateSystems/determinate-nix-action@v3
       - uses: DeterminateSystems/magic-nix-cache-action@main
-      - uses: cachix/cachix-action@v16
+      - uses: cachix/cachix-action@v17
         with:
           pushFilter: '(-source$ | nixpkgs\.tar\.gz$)'
           name: frai3nix
